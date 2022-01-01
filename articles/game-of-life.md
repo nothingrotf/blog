@@ -1,7 +1,5 @@
 # Recreating the John Conway's Game of Life with JavaScript
 
----
-
 ## Introduction:
 
 **Game of life** is a game desenvolved by **John Conway**. It is the most well-known example of a cellular automaton.
@@ -17,15 +15,11 @@ First of all we need to know how that happen. The game follow some simple rules 
 - Any live cell with more than three live neighbours dies, as if by overpopulation;
 - Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
 
----
-
-Knowing the history and the rules of the game we can start develop the game
-
----
+Knowing the history and the rules we can start develop the game
 
 ## HTML, CSS
 
-We will use **Canvas** of **HTML** to create the table, wich allow us to create and render 2D or 3D forms.
+We will use **Canvas API** of **HTML** to create the table, wich allow us to create and render 2D or 3D forms.
 
 First lets starting creating the HTML file:
 
@@ -45,7 +39,7 @@ First lets starting creating the HTML file:
 </body>
 </html>
 ```
-We add in body a <canvas> tag with a **id**, that will be our board (im calling table), and a <script><> tag with our engine that will do it works
+We add in body a <canvas> tag with a **id**, that will be our board (im calling table), and a <script> tag with our engine, that will do it works.
 
 Now lets write a simple **CSS** (you can style anyway you want)
 I'll just reset the page, change the background color and center everything
@@ -62,5 +56,37 @@ body {
     justify-content: center;
     align-items: center;
     background: #110b1a;
+}
+```
+## Engine
+
+We need to define some constants to use along the code:
+
+- WIDTH = Width of the table;
+- HEIGHT = Height of the table;
+- RESLUTION = Size of the cell;
+- COLUMNS = Amount of columns;
+- ROWS = Amount of rows;
+- ALIVE_COLOR = The color of a alive cell;
+- DEAD_COLOR = The color of a dead cell;
+
+```js
+const WIDTH = 500;
+const HEIGHT = 500;
+const RESLUTION = 5;
+const COLUMNS = WIDTH / RESLUTION;
+const ROWS = WIDTH / RESLUTION;
+
+const ALIVE_COLOR = "#5c3ec9"
+const DEAD_COLOR = "#f8f8f2"
+
+...
+```
+Before we start to write the main code, we need to be sure the HTML is completely loaded.
+We can do that encapsulating ours code inside a EventListener with "DOMContentLoaded" of paramter:
+
+```js
+document.addEventListener("DOMContentLoaded", () => {
+    //Here we'll write our code
 }
 ```
