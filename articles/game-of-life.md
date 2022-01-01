@@ -39,10 +39,10 @@ First lets starting creating the HTML file:
 </body>
 </html>
 ```
-We add in body a <canvas> tag with a **id**, that will be our board (im calling table), and a <script> tag with our engine, that will do it works.
+We add in body a `<canvas>` tag with a `**id**`, that will be our board (im calling table), and a `<script>` tag with our engine, that will do it works.
 
 Now lets write a simple **CSS** (you can style anyway you want)
-I'll just reset the page, change the background color and center everything
+I'll just reset the page, change the background color and center everything:
 
 ```css
 * {
@@ -83,10 +83,36 @@ const DEAD_COLOR = "#f8f8f2"
 ...
 ```
 Before we start to write the main code, we need to be sure the HTML is completely loaded.
-We can do that encapsulating ours code inside a EventListener with "DOMContentLoaded" of paramter:
+We can do that encapsulating ours code inside a `document.addEventListener` with `"DOMContentLoaded"` of paramter:
+
+```js
+...
+
+document.addEventListener("DOMContentLoaded", () => {
+    //Here we'll write our code
+}
+
+...
+```
+Now the code ill only run after the HTML is loaded, first step is create a reference to the canvas.
+If u remember, we create inside the HTML `<body>` a `<canvas>` with a `id=table`, we can assign this tag to a JavaScript const with `document.querySelector()` with `#table` parameter.
+
+Than we inform to canvas the context if this is a **2D** or a **3D** form:
 
 ```js
 document.addEventListener("DOMContentLoaded", () => {
-    //Here we'll write our code
+    const canvas = document.querySelector("#table");
+    const ctx = canvas.getContext("2d");
+}
+```
+So lets manipulate the canvas with the const that we have declated before:
+
+```js
+document.addEventListener("DOMContentLoaded", () => {
+    const canvas = document.querySelector("#table");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = WIDTH;
+    canvas.height = HEIGHT;
 }
 ```
