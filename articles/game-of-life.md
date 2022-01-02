@@ -15,6 +15,8 @@ First of all we need to know how that happen. The game follow some simple rules 
 - Any live cell with more than three live neighbours dies, as if by overpopulation;
 - Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
 
+![gamerules](/images/game-of-life/gamerules.jpg)
+
 Knowing the history and the rules we can start develop the game
 
 ## HTML, CSS
@@ -39,6 +41,7 @@ First lets starting creating the HTML file:
 </body>
 </html>
 ```
+
 We add in body a `<canvas>` tag with a `id`, that will be our board (im calling table), and a `<script>` tag with our engine, that will do it works.
 
 Now lets write a simple **CSS** (you can style anyway you want)
@@ -58,6 +61,7 @@ body {
     background: #110b1a;
 }
 ```
+
 ## Engine
 
 We need to define some constants to use along the code:
@@ -82,6 +86,7 @@ const DEAD_COLOR = "#f8f8f2"
 
 ...
 ```
+
 Before we start to write the main code, we need to be sure the HTML is completely loaded.
 We can do that encapsulating ours code inside a `document.addEventListener` with `"DOMContentLoaded"` of parameter:
 
@@ -94,6 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 ...
 ```
+
 Now the code ill only run after the HTML is loaded, first step is create a reference to the canvas.
 If u remember, we created inside the HTML `<body>` a `<canvas>` with a `id=table`, we can assign this tag to a JavaScript const with `document.querySelector()` with `#table` parameter.
 
@@ -109,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 ...
 ```
+
 So lets manipulate the canvas with the const that we have declated before:
 
 ```js
@@ -124,6 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 ...
 ```
+
 Next step is create a variable to storage all columns, rows, and the information of each cell.
 
 To this we need to create a function `createTable(cols, rows)` that will recive the cols and rows, and its need to return a Array for the columns, another Array inside each column item to the rows, and each item need to recive a random num, they could be `0` or `1`:
@@ -143,6 +151,7 @@ To this we need to create a function `createTable(cols, rows)` that will recive 
 
 ...
 ```
+
 With the Array created, we need to run every item in the array, and draw the cells on `canvas`, to this we will verify, if the item contains `1` that means it is a alive cell or `0` a dead cell.
 
 Lets create a function `drawTable(table, cols, rows, reslution)`, will recive some parameters needed.
@@ -150,7 +159,7 @@ Lets create a function `drawTable(table, cols, rows, reslution)`, will recive so
 First need to clear the canvas, to replace the cells, canvas have a method called `context.clearRect(x, y, width, height)`, the two first parameters recive the position where the method will start to clear, and the last two parameters, recive where will stop to clear.
 
 Now we run the array and replace with the colors, case `1` the cell will recive the `ALIVE_COLOR` else if `0` will recive `DEAD_COLOR`
-To apply the color to the canvas we have two methods, the first is `context.fillStyle` that recive the color, and `context.fillRect(x, y, width, height)`, that follow the same logic of `context.clearRect()`:
+To apply the color to the canvas we have two methods, the first is `context.fillStyle` that recive the color, and `context.fillRect(x, y, width, height)`, that follow the same logic of `context.clearRect()`, however instead of cleaning it will apply the syle defined in the previuos fillRect method:
 
 ```js
 ...
@@ -167,4 +176,266 @@ To apply the color to the canvas we have two methods, the first is `context.fill
     }
 
 ...
+```
+
+Now we already have the table with random cells, so thats the time to create a function that will run each item of array and apply the conditions of life or dead, and create a new Array with the new generation of cells, that will be drawed in `drawTable` function.
+
+Generation will be each cicle that the Array is generated again, the new Array need to inherit the older Generation conditions, applied the new conditions.
+
+Lets start with a new function that will called `nextGeneration(table)` and will recive the Array with parameter (will be our table), next step is create a varible `nextGeneration` to storage the new generation, thats prevent the older generation will not be modified:
+
+```js
+...
+
+    function nextGeneration(table) {
+        const nextGeneration = table.map((arr) => [ ...arr ]);
+    }
+
+...
+```
+
+So here we can start some loops to run along the Array and create some useful variables, `currentCell` will recive the current positions of the cell where the loop is, and `sumNeighbors` to storage the neighbor's cell amount:
+
+```js
+...
+
+    function nextGeneration(table) {
+        const nextGeneration = table.map((arr) => [ ...arr ]);
+
+        for(let col = 0; col < table.length; col++) {
+            for(let row = 0; row < table[col].length; row++) {
+                const currentCell = table[col][row];
+                
+                let sumNeighbors = 0;
+            }
+        }
+    }
+
+...
+```
+
+Now we need verify all the 8 neighbor's cell, case the neighbor is alive, it is need to be concatenate in `sumNeighbors`.
+To this will run a for loop for `x` and `y` where will start at `-1` index to the `1` index.
+
+![gamerules](/images/game-of-life/neighbor.jpg)
+
+We can't forget to skip the current cell of array `cell[0][0]`, we only need the neighbors:
+
+```js
+...
+
+    function nextGeneration(table) {
+        const nextGeneration = table.map((arr) => [ ...arr ]);
+
+        for(let col = 0; col < table.length; col++) {
+            for(let row = 0; row < table[col].length; row++) {
+                const currentCell = table[col][row];
+                
+                let sumNeighbors = 0;
+
+                for(let cellX = -1; cellX < 2; cellX++) {
+                    for(let cellY = -1; cellY < 2; cellY++) {
+                        if(cellX === 0 && cellY === 0) {
+                            continue;
+                        }
+
+                        const currentNeighbor = table[ col + cellX ][ row + cellY ];
+                        sumNeighbors += currentNeighbor;
+                    }
+                }
+            }
+        }
+    }
+
+...
+```
+
+It is working, but we have a problem, in this method, when we have a cell on the margin of the table, the loop will try to find neighbors outside of or table, so we need to prevents this.
+
+To this, we will create two new variables `X` and `Y` to get the real position of the neighbor, so now we only concatenate the neighbors where is inside of our table.
+
+```js
+...
+
+    function nextGeneration(table) {
+        const nextGeneration = table.map((arr) => [ ...arr ]);
+
+        for(let col = 0; col < table.length; col++) {
+            for(let row = 0; row < table[col].length; row++) {
+                const currentCell = table[col][row];
+                
+                let sumNeighbors = 0;
+
+                 for(let cellX = -1; cellX < 2; cellX++) {
+                    for(let cellY = -1; cellY < 2; cellY++) {
+                        if(cellX === 0 && cellY === 0) {
+                            continue;
+                        }
+
+                        const x = col + cellX;
+                        const y = row + cellY;
+
+                        if(x >= 0 && y >= 0 && x < COLUMNS && y < ROWS) {
+                            const currentNeighbor = table[ col + cellX ][ row + cellY ];
+                            sumNeighbors += currentNeighbor;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+...
+```
+
+Now we already have the neighbors of the cell, so thats the time to apply the gamerules. 
+
+```js
+...
+
+    function nextGeneration(table) {
+        const nextGeneration = table.map((arr) => [ ...arr ]);
+
+        for(let col = 0; col < table.length; col++) {
+            for(let row = 0; row < table[col].length; row++) {
+                const currentCell = table[col][row];
+                
+                let sumNeighbors = 0;
+
+                for(let cellX = -1; cellX < 2; cellX++) {
+                    for(let cellY = -1; cellY < 2; cellY++) {
+                        if(cellX === 0 && cellY === 0) {
+                            continue;
+                        }
+
+                        const x = col + cellX;
+                        const y = row + cellY;
+
+                        if(x >= 0 && y >= 0 && x < COLUMNS && y < ROWS) {
+                            const currentNeighbor = table[ col + cellX ][ row + cellY ];
+                            sumNeighbors += currentNeighbor;
+                        }
+                    }
+                }
+
+                if(currentCell === 0 && sumNeighbors === 3) {
+                    nextGeneration[col][row] = 1;
+                } else if(currentCell === 1 && (sumNeighbors < 2 || sumNeighbors > 3)) {
+                    nextGeneration[col][row] = 0;
+                }
+            }
+        }
+
+        return nextGeneration;
+    }
+
+...
+```
+
+The first condition, means if the current cell is dead, and has 3 neighbors, that cell ill be revived.
+The second condition, means if the current cell is alive, and has only 1 neighbor or more than 3, that cell ill die.
+
+Than we just return the new generation.
+
+So the game, is now almost ready, we just need to create a loop to refresh the generation, to this we will use a simple loop with a native JavaScript function `requestAnimationFrame(update)`, lets create a function named `update()` to execute our group of functions and repeat the loop:
+
+```js
+...
+
+    requestAnimationFrame(update)
+    
+    function update() {
+        table = nextGeneration(table);
+        drawTable(table, COLUMNS, ROWS, RESLUTION);
+        requestAnimationFrame(update);
+    }
+
+...
+```
+
+The game is complete, lets check the code?
+
+```js
+const WIDTH = 500;
+const HEIGHT = 500;
+const RESLUTION = 5;
+const COLUMNS = WIDTH / RESLUTION;
+const ROWS = WIDTH / RESLUTION;
+
+const ALIVE_COLOR = "#5c3ec9"
+const DEAD_COLOR = "#f8f8f2"
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const canvas = document.querySelector("#table");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = WIDTH;
+    canvas.height = HEIGHT;
+
+    function createTable(cols, rows) {
+        return new Array(cols)
+            .fill(null)
+            .map(() =>
+            new Array(rows).fill(null).map(() => Math.round(Math.random()))
+        );
+    }
+
+    let table = createTable(COLUMNS, ROWS)
+
+    function drawTable(table, cols, rows, reslution) {
+        ctx.clearRect(0, 0, cols, rows);
+        for(let cellX = 0; cellX < cols; cellX++) {
+            for(let cellY = 0; cellY < rows; cellY++) {
+                const cell = table[cellX][cellY];
+                ctx.fillStyle = cell ? ALIVE_COLOR : DEAD_COLOR
+                ctx.fillRect(cellX * reslution, cellY * reslution, reslution, reslution)
+            }
+        }
+    }
+
+    function nextGeneration(table) {
+        const nextGeneration = table.map((arr) => [ ...arr ]);
+
+        for(let col = 0; col < table.length; col++) {
+            for(let row = 0; row < table[col].length; row++) {
+                const currentCell = table[col][row];
+                
+                let sumNeighbors = 0;
+
+                for(let cellX = -1; cellX < 2; cellX++) {
+                    for(let cellY = -1; cellY < 2; cellY++) {
+                        if(cellX === 0 && cellY === 0) {
+                            continue;
+                        }
+
+                        const x = col + cellX;
+                        const y = row + cellY;
+
+                        if(x >= 0 && y >= 0 && x < COLUMNS && y < ROWS) {
+                            const currentNeighbor = table[ col + cellX ][ row + cellY ];
+                            sumNeighbors += currentNeighbor;
+                        }
+                    }
+                }
+
+                if(currentCell === 0 && sumNeighbors === 3) {
+                    nextGeneration[col][row] = 1;
+                } else if(currentCell === 1 && (sumNeighbors < 2 || sumNeighbors > 3)) {
+                    nextGeneration[col][row] = 0;
+                }
+            }
+        }
+
+        return nextGeneration;
+    }
+    
+    requestAnimationFrame(update)
+    
+    function update() {
+        table = nextGeneration(table);
+        drawTable(table, COLUMNS, ROWS, RESLUTION);
+        requestAnimationFrame(update);
+    }
+})
 ```
