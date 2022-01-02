@@ -26,6 +26,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let table = createTable(COLUMNS, ROWS)
 
+    function drawTable(table, cols, rows, reslution) {
+        ctx.clearRect(0, 0, cols, rows);
+        for(let cellX = 0; cellX < cols; cellX++) {
+            for(let cellY = 0; cellY < rows; cellY++) {
+                const cell = table[cellX][cellY];
+                ctx.fillStyle = cell ? ALIVE_COLOR : DEAD_COLOR
+                ctx.fillRect(cellX * reslution, cellY * reslution, reslution, reslution)
+            }
+        }
+    }
+
     function nextGeneration(table) {
         const nextGeneration = table.map((arr) => [ ...arr ]);
 
@@ -60,17 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         return nextGeneration;
-    }
-
-    function drawTable(table, cols, rows, reslution) {
-        ctx.clearRect(0, 0, cols, rows);
-        for(let cellX = 0; cellX < cols; cellX++) {
-            for(let cellY = 0; cellY < rows; cellY++) {
-                const cell = table[cellX][cellY];
-                ctx.fillStyle = cell ? ALIVE_COLOR : DEAD_COLOR
-                ctx.fillRect(cellX * reslution, cellY * reslution, reslution, reslution)
-            }
-        }
     }
     
     requestAnimationFrame(update)
