@@ -451,7 +451,7 @@ Some videos that inspired me to write this article:
 - [Neat AI Does Conways AI Life - Allowing a neural network evolve its own patterns](https://www.youtube.com/watch?v=viA-HIW-2C4)
 - [Stephen Hawkings The Meaning of Life (John Conway's Game of Life segment)](https://www.youtube.com/watch?v=CgOcEZinQ2I)
 
-You can check the code on this same repository: [Game of Life](/demos/game-of-life)
+You can check the code on this same repository: [Game of Life](https://github.com/nothingrotf/blog/tree/master/demos/game-of-life)
 
 I hope you enjoyed it and that you were able to learn something cool.
 
