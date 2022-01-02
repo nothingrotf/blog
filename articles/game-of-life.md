@@ -39,7 +39,7 @@ First lets starting creating the HTML file:
 </body>
 </html>
 ```
-We add in body a `<canvas>` tag with a `**id**`, that will be our board (im calling table), and a `<script>` tag with our engine, that will do it works.
+We add in body a `<canvas>` tag with a `id`, that will be our board (im calling table), and a `<script>` tag with our engine, that will do it works.
 
 Now lets write a simple **CSS** (you can style anyway you want)
 I'll just reset the page, change the background color and center everything:
@@ -83,7 +83,7 @@ const DEAD_COLOR = "#f8f8f2"
 ...
 ```
 Before we start to write the main code, we need to be sure the HTML is completely loaded.
-We can do that encapsulating ours code inside a `document.addEventListener` with `"DOMContentLoaded"` of paramter:
+We can do that encapsulating ours code inside a `document.addEventListener` with `"DOMContentLoaded"` of parameter:
 
 ```js
 ...
@@ -95,19 +95,25 @@ document.addEventListener("DOMContentLoaded", () => {
 ...
 ```
 Now the code ill only run after the HTML is loaded, first step is create a reference to the canvas.
-If u remember, we create inside the HTML `<body>` a `<canvas>` with a `id=table`, we can assign this tag to a JavaScript const with `document.querySelector()` with `#table` parameter.
+If u remember, we created inside the HTML `<body>` a `<canvas>` with a `id=table`, we can assign this tag to a JavaScript const with `document.querySelector()` with `#table` parameter.
 
 Than we inform to canvas the context if this is a **2D** or a **3D** form:
 
 ```js
+...
+
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.querySelector("#table");
     const ctx = canvas.getContext("2d");
 }
+
+...
 ```
 So lets manipulate the canvas with the const that we have declated before:
 
 ```js
+...
+
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.querySelector("#table");
     const ctx = canvas.getContext("2d");
@@ -115,4 +121,50 @@ document.addEventListener("DOMContentLoaded", () => {
     canvas.width = WIDTH;
     canvas.height = HEIGHT;
 }
+
+...
+```
+Next step is create a variable to storage all columns, rows, and the information of each cell.
+
+To this we need to create a function `createTable(cols, rows)` that will recive the cols and rows, and its need to return a Array for the columns, another Array inside each column item to the rows, and each item need to recive a random num, they could be `0` or `1`:
+
+```js
+...
+
+    function createTable(cols, rows) {
+        return new Array(cols)
+            .fill(null)
+            .map(() =>
+            new Array(rows).fill(null).map(() => Math.round(Math.random()))
+        );
+    }
+
+    let table = createTable(COLUMNS, ROWS)
+
+...
+```
+With the Array created, we need to run every item in the array, and draw the cells on `canvas`, to this we will verify, if the item contains `1` that means it is a alive cell or `0` a dead cell.
+
+Lets create a function `drawTable(table, cols, rows, reslution)`, will recive some parameters needed.
+
+First need to clear the canvas, to replace the cells, canvas have a method called `context.clearRect(x, y, width, height)`, the two first parameters recive the position where the method will start to clear, and the last two parameters, recive where will stop to clear.
+
+Now we run the array and replace with the colors, case `1` the cell will recive the `ALIVE_COLOR` else if `0` will recive `DEAD_COLOR`
+To apply the color to the canvas we have two methods, the first is `context.fillStyle` that recive the color, and `context.fillRect(x, y, width, height)`, that follow the same logic of `context.clearRect()`:
+
+```js
+...
+
+    function drawTable(table, cols, rows, reslution) {
+        ctx.clearRect(0, 0, cols, rows);
+        for(let cellX = 0; cellX < cols; cellX++) {
+            for(let cellY = 0; cellY < rows; cellY++) {
+                const cell = table[cellX][cellY];
+                ctx.fillStyle = cell ? ALIVE_COLOR : DEAD_COLOR
+                ctx.fillRect(cellX * reslution, cellY * reslution, reslution, reslution)
+            }
+        }
+    }
+
+...
 ```
