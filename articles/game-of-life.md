@@ -56,6 +56,7 @@ I'll just reset the page, change the background color and center everything:
 
 body {
     display: flex;
+    height: 100vh;
     justify-content: center;
     align-items: center;
     background: #110b1a;
