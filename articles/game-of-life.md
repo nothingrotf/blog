@@ -96,7 +96,7 @@ We can do that encapsulating our code inside a `document.addEventListener` with 
 
 document.addEventListener("DOMContentLoaded", () => {
     //Here we'll write our code
-}
+})
 
 ...
 ```
@@ -113,7 +113,7 @@ Than we inform to canvas the context if this is a **2D** or a **3D** form:
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.querySelector("#table");
     const ctx = canvas.getContext("2d");
-}
+})
 
 ...
 ```
@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     canvas.width = WIDTH;
     canvas.height = HEIGHT;
-}
+})
 
 ...
 ```
